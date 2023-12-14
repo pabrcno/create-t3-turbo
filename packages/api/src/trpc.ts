@@ -10,61 +10,39 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { auth, validateToken } from "@acme/auth";
 import type { Session } from "@acme/auth";
+import { auth, validateToken } from "@acme/auth";
 import { db } from "@acme/db";
 
 /**
  * 1. CONTEXT
  *
- * This section defines the "contexts" that are available in the backend API
+ * This section defines the "contexts" that are available in the backend API.
  *
- * These allow you to access things like the database, the session, etc, when
- * processing a request
+ * These allow you to access things when processing a request, like the database, the session, etc.
  *
- */
-interface CreateContextOptions {
-  session: Session | null;
-  token: string | null;
-}
-
-/**
- * This helper generates the "internals" for a tRPC context. If you need to use
- * it, you can export it from here
+ * This helper generates the "internals" for a tRPC context. The API handler and RSC clients each
+ * wrap this and provides the required context.
  *
- * Examples of things you may need it for:
- * - testing, so we dont have to mock Next.js' req/res
- * - trpc's `createSSGHelpers` where we don't have req/res
- * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
- */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    ...opts,
-    db,
-  };
-};
-
-/**
- * This is the actual context you'll use in your router. It will be used to
- * process every request that goes through your tRPC endpoint
- * @link https://trpc.io/docs/context
+ * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: {
-  req?: Request;
-  auth: Session | null;
+  headers: Headers;
+  session: Session | null;
 }) => {
-  const authToken = opts.req?.headers.get("Authorization") ?? null;
+  const authToken = opts.headers.get("Authorization") ?? null;
   const session = authToken
     ? await validateToken(authToken)
-    : opts.auth ?? (await auth());
+    : opts.session ?? (await auth());
 
-  const source = opts.req?.headers.get("x-trpc-source") ?? "unknown";
+  const source = opts.headers.get("x-trpc-source") ?? "unknown";
   console.log(">>> tRPC Request from", source, "by", session?.user);
 
-  return createInnerTRPCContext({
+  return {
     session,
     token: authToken,
-  });
+    db,
+  };
 };
 
 /**

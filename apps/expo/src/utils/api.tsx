@@ -1,7 +1,7 @@
 import React from "react";
 import Constants from "expo-constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink } from "@trpc/client";
+import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import superjson from "superjson";
 
@@ -63,6 +63,12 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
 
             return Object.fromEntries(headers);
           },
+        }),
+        loggerLink({
+          enabled: (opts) =>
+            process.env.NODE_ENV === "development" ||
+            (opts.direction === "down" && opts.result instanceof Error),
+          colorMode: "ansi",
         }),
       ],
     }),

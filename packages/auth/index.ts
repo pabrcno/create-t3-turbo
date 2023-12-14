@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 /* @see https://github.com/nextauthjs/next-auth/pull/8932 */
 
-import Discord from "@auth/core/providers/discord";
-import type { DefaultSession, Session } from "@auth/core/types";
+import type { DefaultSession, Session } from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import NextAuth from "next-auth";
+import Discord from "next-auth/providers/discord";
 
 import { db, tableCreator } from "@acme/db";
 
