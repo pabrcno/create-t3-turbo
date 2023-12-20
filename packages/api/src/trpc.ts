@@ -10,9 +10,8 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import type { Session } from "@acme/auth";
-import { auth } from "@acme/auth";
-import { db } from "@acme/db";
+import type { Session } from "@mapads/auth";
+import { auth } from "@mapads/auth";
 
 /**
  * 1. CONTEXT
@@ -37,7 +36,6 @@ export const createTRPCContext = async (opts: {
 
   return {
     session,
-    db,
   };
 };
 

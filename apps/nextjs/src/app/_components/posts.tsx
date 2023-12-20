@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { RouterOutputs } from "@acme/api";
+import type { RouterOutputs } from "@mapads/api";
 
 import { api } from "~/trpc/react";
 
