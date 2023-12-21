@@ -3,7 +3,8 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter, createTRPCContext } from "@mapads/api";
 import { auth } from "@mapads/auth";
 
-export const runtime = "edge";
+export const runtime =
+  process.env.NODE_ENV === "development" ? "nodejs" : "experimental-edge";
 
 /**
  * Configure basic CORS headers
